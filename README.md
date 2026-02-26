@@ -35,9 +35,7 @@
   .data-table{width:100%;border-collapse:collapse;}
   .data-table th{background:var(--surface2);color:var(--muted);font-size:0.7rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:10px 16px;text-align:left;cursor:pointer;user-select:none;white-space:nowrap;}
   .data-table th:hover{color:var(--text);}
-  .data-table td{padding:11px 16px;font-size:0.875rem;border-bottom:1px solid var(--border);vertical-align:middle;background:transparent;color:var(--text);}
-  .data-table tbody tr{background:var(--surface);}
-  .data-table tr:hover td{background:rgba(255,255,255,0.025);cursor:pointer;}
+  .data-table tr:hover td{background:#1e2a3a !important;cursor:pointer;}
 
   .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-size:0.72rem;font-weight:500;font-family:'DM Mono',monospace;letter-spacing:0.02em;}
   .badge-paid{background:rgba(16,185,129,0.12);color:#34d399;}
@@ -89,8 +87,13 @@
   #toast.show{transform:translateY(0);opacity:1;}
 
   .mono{font-family:'DM Mono',monospace;}
-  .section-view{display:none;}
-  .section-view.active{display:block;}
+  .section-view{display:none;background:var(--bg);}
+  .section-view.active{display:block;background:var(--bg);}
+  main{background:var(--bg);}
+  .data-table tbody{background:var(--surface);}
+  .data-table tbody tr{background:var(--surface);}
+  .data-table td{padding:11px 16px;font-size:0.875rem;border-bottom:1px solid var(--border);vertical-align:middle;background:var(--surface);color:var(--text);}
+  .data-table tr:hover td{background:#1e2a3a !important;cursor:pointer;}
 
   @media print{
     body *{visibility:hidden;}
@@ -118,7 +121,7 @@
   @media(max-width:640px){#crm-panel{width:100vw;}}
 </style>
 </head>
-<body>
+<body style="background:#0e1117;color:#e2e8f0;">
 
 <!-- HEADER -->
 <header style="background:var(--surface);border-bottom:1px solid var(--border);" class="px-5 py-3 flex items-center justify-between sticky top-0 z-40 flex-wrap gap-3">
