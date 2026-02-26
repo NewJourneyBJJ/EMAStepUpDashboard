@@ -1,4 +1,6 @@
+<!DOCTYPE html>
 <html lang="en">
+<head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>EMA Step Up — Vendor Dashboard</title>
@@ -568,6 +570,7 @@ function normalizeRow(row,fields){
 }
 function initDashboard(data,fields){
   allRows=data.map(r=>normalizeRow(r,fields||Object.keys(r)));
+  persistData();
   showDashboard();
 }
 
@@ -617,6 +620,7 @@ function loadDemo(){
   });
   document.getElementById('file-name-label').textContent='demo-data.csv';
   document.getElementById('file-name-label').style.display='inline';
+  persistData();
   showDashboard();
 }
 function showDashboard(){
@@ -1247,9 +1251,44 @@ function openReport(){
 function closeReport(){document.getElementById('print-modal').classList.remove('open');}
 function printReport(){window.print();}
 
+// ─── Persistence ─────────────────────────────────────────────────────────────
+function persistData(){
+  try{
+    // Store rows without the live dateObj (it's not serializable cleanly); we re-hydrate on load
+    const slim=allRows.map(r=>({dateRaw:r.dateRaw,name:r.name,parentName:r.parentName||'',amount:r.amount,status:r.status}));
+    localStorage.setItem('ema_rows',JSON.stringify(slim));
+    localStorage.setItem('ema_filename',document.getElementById('file-name-label').textContent||'');
+  }catch(e){/* storage full or private mode */}
+}
+
+function rehydrateRows(slim){
+  return slim.map(r=>{
+    let dateObj=null;
+    try{const n=(r.dateRaw||'').trim().replace(/\//g,'-');dateObj=new Date(n.includes('T')?n:n+'T12:00:00');if(isNaN(dateObj))dateObj=null;}catch{}
+    return{...r,dateObj,raw:{}};
+  });
+}
+
+// Auto-restore on page load
+(function restoreOnLoad(){
+  try{
+    const saved=localStorage.getItem('ema_rows');
+    if(!saved)return;
+    const slim=JSON.parse(saved);
+    if(!slim||!slim.length)return;
+    allRows=rehydrateRows(slim);
+    const fname=localStorage.getItem('ema_filename')||'saved-data.csv';
+    document.getElementById('file-name-label').textContent=fname;
+    document.getElementById('file-name-label').style.display='inline';
+    showDashboard();
+  }catch(e){/* corrupt data — ignore and show upload screen */}
+})();
+
 // ─── Reset ────────────────────────────────────────────────────────────────────
 function resetDashboard(){
   allRows=[];filteredRows=[];
+  localStorage.removeItem('ema_rows');
+  localStorage.removeItem('ema_filename');
   if(revenueChart){revenueChart.destroy();revenueChart=null;}
   document.getElementById('upload-section').style.display='block';
   document.getElementById('dashboard-section').style.display='none';
